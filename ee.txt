@@ -1,0 +1,100 @@
+create procedure P(new_roll int,d varchar(30))
+begin
+declare x int;
+DECLARE CONTINUE HANDLER FOR NOT FOUND
+
+begin
+   select 'NOT FOUND';
+end;
+select datediff(curdate(),dateofissue) into x from borrower where Roll_no = new_roll;
+if x > 15 && x < 30
+then
+insert into fine values(new_roll,curdate(),x*5);
+end if;
+if x>30
+then
+insert into fine values(new_roll,curdate(),x*50);
+end if;
+update borrower set status = 'R' where roll_no = new_roll;
+end;
+//
+
+-------------------------------------
+
+
+
+
+create procedure v()
+  begin
+    declare i int;
+    declare ans decimal(10,2);
+   set i = 5;
+   while(i<=9) do
+     set ans = 3.14 * i * i;
+     insert into kol values (i,ans);
+     set i = i + 1;
+   end while;
+
+end;
+//
+
+---------------------------------
+create procedure proc_handler(in a int,out b int)
+begin
+if a <= 1500 && a >= 990 then set b = 1;
+end if;
+if a <= 989 && a >= 900 then set b = 2;
+end if;
+if a <= 899 && a >= 825 then set b = 3;
+end if;
+
+end;
+//
+
+create function find_resu(roll_in int) returns int
+Deterministic
+begin
+declare fmarks int;
+declare grade int;
+declare stud_name char(10);
+select stud_marks.total_marks,stud_marks.name into fmarks,stud_name from stud_marks where stud_marks.roll_no=roll_in;
+call proc_handler(fmarks,@grade);
+insert into result values(roll_in,stud_name,@grade);
+return roll_in;
+end;//
+
+
+
+------------------------------------------
+
+-------------------------------------------
+Database Trigger (All Types: Row level and Statement level triggers, Before and After Triggers). 
+Write a database trigger on Library table. The System should keep track of the records that are being updated or deleted. The old value of updated or deleted records should be added in Library_Audit table. 
+
+
+create trigger upd_lib
+before update on library
+for each row
+begin
+insert into audit values(old.id,old.book,'update');
+end;
+//
+
+create trigger del_lib
+before delete on library
+for each row
+begin
+insert into audit values(old.id,old.book,'delete');
+end;
+//
+
+--------------------------------------
+mongodb-------------
+
+db.e.aggregate([{$match:{status:'A'}},{$group:{_id:"$custID",totalAmount:{$sum:"$Amount"}}}])
+
+
+
+
+
+
